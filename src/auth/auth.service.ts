@@ -24,21 +24,22 @@ export class AuthService {
 
   async register(dto: CreateUserDto) {
     try {
-      console.log(dto);
-      const userData = await this.usersService.create(dto);
+      const { uuid, password, ...userData } =
+        await this.usersService.create(dto);
       return {
-        userData,
-        // token: this.jwtService.sign({ id: userData.id }),
+        ...userData,
+        token: this.jwtService.sign({ uuid }),
       };
     } catch (e) {
-      console.log(e);
       throw new ForbiddenException('Register failed');
     }
   }
 
   async login(user: UserEntity) {
     return {
-      token: this.jwtService.sign({ id: user.id }),
+      token: this.jwtService.sign({ uuid: user.uuid }),
+      email: user.email,
+      fullname: user.fullname,
     };
   }
 }

@@ -12,12 +12,12 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async findByEmail(email: string): Promise<UserEntity> {
-    return this.userRepository.findOneBy({ email });
+  async findByEmail(email: string): Promise<UserEntity | undefined> {
+    return this.userRepository.findOne({ where: { email } });
   }
 
-  async findById(id: number): Promise<UserEntity> {
-    return this.userRepository.findOneBy({ id });
+  async findById(uuid: string): Promise<UserEntity> {
+    return this.userRepository.findOneBy({ uuid });
   }
 
   async create(dto: CreateUserDto) {

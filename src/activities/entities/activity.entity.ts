@@ -6,29 +6,32 @@ export class ActivityEntity {
   activity_id: number;
 
   @Column()
-  activity_name?: string;
+  activity_name: string;
 
-  @Column()
-  activity_duration?: number;
+  @Column({ nullable: true })
+  activity_creator_id: string;
 
-  @Column()
-  activity_location?: string;
+  @Column({ nullable: true })
+  activity_duration: number;
 
-  @Column()
+  @Column({ nullable: true })
+  activity_location: string;
+
+  @Column({ nullable: true })
   activity_type: string;
 
-  @Column()
-  activity_participants: string;
+  @Column({ default: 0 })
+  activity_participants: number;
 
-  @Column()
-  activity_rating?: number;
+  @Column({ nullable: true })
+  activity_rating: number;
 
-  @Column()
-  activity_notes?: string;
+  @Column({ default: '' })
+  activity_notes: string;
 
-  @Column()
-  activity_date?: string;
+  @Column({ nullable: true })
+  activity_date: string;
 
-  @Column()
-  activity_cost?: string;
+  @Column({ default: 0 })
+  activity_cost: number;
 }

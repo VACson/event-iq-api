@@ -8,6 +8,10 @@ import { ActivitiesModule } from './activities/activities.module';
 import { ActivityEntity } from './activities/entities/activity.entity';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { ImagesModule } from './images/images.module';
+import { ImageEntity } from './images/entities/image.entity';
 
 @Module({
   imports: [
@@ -19,12 +23,16 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [UserEntity, ActivityEntity],
+      entities: [UserEntity, ActivityEntity, ImageEntity],
       synchronize: true,
     }),
     UsersModule,
     ActivitiesModule,
     AuthModule,
+    MulterModule.register({
+      storage: memoryStorage(),
+    }),
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
