@@ -63,4 +63,34 @@ export class ImagesController {
   remove(@UserId() userId: string, @Query('ids') ids: string) {
     return this.imagesService.remove(userId, ids);
   }
+
+  @Post('avatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: imagesStorage,
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  updateAvatar(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 5 })],
+      }),
+    )
+    file: Express.Multer.File,
+    @UserId() userId: string,
+  ) {
+    return this.imagesService.updateAvatar(file, userId);
+  }
 }

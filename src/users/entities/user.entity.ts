@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('users')
@@ -24,6 +25,6 @@ export class UserEntity {
   @Column({ nullable: true })
   description?: string;
 
-  @OneToMany(() => ImageEntity, (image) => image.user)
-  avatar: ImageEntity[];
+  @Column({ nullable: true })
+  avatar?: string;
 }
