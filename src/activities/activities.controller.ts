@@ -13,6 +13,7 @@ import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { UserId } from 'src/decorators/user-id.decorator';
 
 @Controller('activities')
 @ApiTags('activities')
@@ -22,8 +23,11 @@ export class ActivitiesController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createActivityDto: CreateActivityDto) {
-    return this.activitiesService.create(createActivityDto);
+  create(
+    @Body() createActivityDto: CreateActivityDto,
+    @UserId() userUuid: string,
+  ) {
+    return this.activitiesService.create(userUuid, createActivityDto);
   }
 
   @Get()
@@ -32,23 +36,29 @@ export class ActivitiesController {
     return { results };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.activitiesService.findOne(+id);
+  @Get('user-created')
+  @UseGuards(JwtAuthGuard)
+  findAllByCreator(@UserId() uuid: string) {
+    return this.activitiesService.findUserCreatedEvents(uuid);
   }
 
-  @Patch(':id')
+  @Get(':uuid')
+  findOne(@Param('uuid') uuid: string) {
+    return this.activitiesService.findById(uuid);
+  }
+
+  @Patch(':uuid')
   @UseGuards(JwtAuthGuard)
   update(
-    @Param('id') id: string,
+    @Param('uuid') uuid: string,
     @Body() updateActivityDto: UpdateActivityDto,
   ) {
-    return this.activitiesService.update(+id, updateActivityDto);
+    return this.activitiesService.update(uuid, updateActivityDto);
   }
 
-  @Delete(':id')
+  @Delete(':uuid')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.activitiesService.remove(+id);
+  remove(@Param('uuid') uuid: string) {
+    return this.activitiesService.remove(uuid);
   }
 }

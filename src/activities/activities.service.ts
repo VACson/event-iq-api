@@ -1,34 +1,80 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActivityEntity } from './entities/activity.entity';
 import { Repository } from 'typeorm';
+import { ImageEntity } from 'src/images/entities/image.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ActivitiesService {
   constructor(
     @InjectRepository(ActivityEntity)
     private activityRepository: Repository<ActivityEntity>,
+    private usersService: UsersService,
   ) {}
 
-  create(createActivityDto: CreateActivityDto) {
-    return this.activityRepository.save(createActivityDto);
+  async create(userUuid: string, createActivityDto: CreateActivityDto) {
+    const user = await this.usersService.findById(userUuid);
+
+    return this.activityRepository.save({
+      ...createActivityDto,
+      activity_creator: user,
+    });
   }
 
-  async findAll() {
-    return this.activityRepository.find();
+  async findAll({ limit = 10, offset = 0 } = {}): Promise<ActivityEntity[]> {
+    return this.activityRepository.find({
+      relations: ['activity_creator', 'activity_images'],
+      take: limit,
+      skip: offset,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} activity`;
+  async findUserCreatedEvents(userUuid: string): Promise<ActivityEntity[]> {
+    const user = await this.usersService.findById(userUuid);
+
+    return this.activityRepository.find({ where: { activity_creator: user } });
   }
 
-  update(id: number, updateActivityDto: UpdateActivityDto) {
-    return `This action updates a #${id} activity`;
+  findById(activity_uuid: string): Promise<ActivityEntity> {
+    return this.activityRepository.findOneBy({ activity_uuid });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} activity`;
+  async update(
+    activity_uuid: string,
+    dto: UpdateActivityDto,
+  ): Promise<ActivityEntity> {
+    const activity = await this.activityRepository.findOneBy({ activity_uuid });
+
+    if (!activity) {
+      throw new NotFoundException('Event not found');
+    }
+
+    Object.assign(activity, dto);
+
+    return this.activityRepository.save(activity);
+  }
+
+  async addActivityImage(
+    activity_uuid: string,
+    image: ImageEntity,
+  ): Promise<ActivityEntity> {
+    const activity = await this.activityRepository.findOne({
+      where: { activity_uuid },
+      relations: ['activity_images'],
+    });
+
+    if (!activity) {
+      throw new NotFoundException('User not found');
+    }
+
+    activity.activity_images.push(image);
+    return this.activityRepository.save(activity);
+  }
+
+  remove(activity_uuid: string) {
+    return `This action removes a #${activity_uuid} activity`;
   }
 }

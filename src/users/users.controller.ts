@@ -21,7 +21,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { UserId } from 'src/decorators/user-id.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -32,11 +32,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get('/me')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -44,7 +39,7 @@ export class UsersController {
     if (!uuid) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    const { password, ...response } = await this.usersService.findById(uuid);
+    const response = await this.usersService.findById(uuid);
 
     if (response.uuid !== uuid) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -52,9 +47,10 @@ export class UsersController {
     return response;
   }
 
-  @Put(':id')
+  @Put(':uuid')
+  @ApiBody({ type: UpdateUserDto })
   async updateUser(
-    @UserId() uuid: string,
+    @Param('uuid') uuid: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(uuid, updateUserDto);

@@ -1,3 +1,4 @@
+import { ActivityEntity } from 'src/activities/entities/activity.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 import {
   Entity,
@@ -31,4 +32,7 @@ export class ImageEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.avatar)
   user: UserEntity;
+
+  @ManyToOne(() => ActivityEntity, (activity) => activity.activity_images)
+  event: ActivityEntity;
 }

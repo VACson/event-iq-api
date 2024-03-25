@@ -13,7 +13,7 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(dto: CreateUserDto) {
+  async create(dto) {
     return this.userRepository.save(dto);
   }
 
@@ -22,17 +22,28 @@ export class UsersService {
   }
 
   async findById(uuid: string): Promise<UserEntity> {
-    return this.userRepository.findOneBy({ uuid });
+    const response = await this.userRepository.findOne({
+      where: { uuid },
+    });
+
+    if (!response) {
+      throw new NotFoundException('User not found');
+    }
+
+    const { password_hash, password_salt, ...user } = response;
+
+    return user;
   }
 
   async update(uuid: string, dto: UpdateUserDto): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ uuid });
-    if (!user) {
-      throw new Error('User not found');
-    }
+    if (!user) throw new NotFoundException('User not found');
+
     Object.assign(user, dto);
 
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+
+    return this.findById(uuid);
   }
 
   async updateUserAvatar(
@@ -40,10 +51,12 @@ export class UsersService {
     image: ImageEntity,
   ): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ uuid });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+
+    if (!user) throw new NotFoundException('User not found');
+
     user.avatar = image.filename;
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+
+    return this.findById(uuid);
   }
 }

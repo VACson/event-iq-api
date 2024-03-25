@@ -5,6 +5,7 @@ import { FileType, ImageEntity } from './entities/image.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
+import { ActivitiesService } from 'src/activities/activities.service';
 
 @Injectable()
 export class ImagesService {
@@ -12,6 +13,7 @@ export class ImagesService {
     @InjectRepository(ImageEntity)
     private imagesRepository: Repository<ImageEntity>,
     private usersService: UsersService,
+    private activitiesService: ActivitiesService,
   ) {}
 
   async create(file: Express.Multer.File, userUuid: string) {
@@ -69,6 +71,31 @@ export class ImagesService {
     await this.imagesRepository.save(image);
 
     const result = await this.usersService.updateUserAvatar(userUuid, image);
+
+    return result;
+  }
+
+  async uploadEventImage(file: Express.Multer.File, activityUuid: string) {
+    const event = await this.activitiesService.findById(activityUuid);
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    const image = this.imagesRepository.create({
+      filename: file.filename,
+      originalName: file.originalname,
+      size: file.size,
+      mimetype: file.mimetype,
+      event: event,
+    });
+
+    await this.imagesRepository.save(image);
+
+    const result = await this.activitiesService.addActivityImage(
+      activityUuid,
+      image,
+    );
 
     return result;
   }
