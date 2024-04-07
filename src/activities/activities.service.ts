@@ -26,7 +26,30 @@ export class ActivitiesService {
 
   async findAll({ limit = 10, offset = 0 } = {}): Promise<ActivityEntity[]> {
     return this.activityRepository.find({
-      relations: ['activity_creator', 'activity_images'],
+      relations: {
+        activity_creator: true,
+        activity_images: true,
+      },
+      select: {
+        activity_uuid: true,
+        activity_name: true,
+        activity_duration: true,
+        activity_category: true,
+        activity_participants: true,
+        activity_notes: true,
+        activity_placement: true,
+        activity_views: true,
+        activity_creator: {
+          username: true,
+          description: true,
+          avatar: true,
+        },
+        activity_images: {
+          filename: true,
+          mimetype: true,
+          originalName: true,
+        },
+      },
       take: limit,
       skip: offset,
     });

@@ -1,12 +1,11 @@
 import { ActivityEntity } from 'src/activities/entities/activity.entity';
-import { ImageEntity } from 'src/images/entities/image.entity';
+import { TeamsEntity } from 'src/teams/entities/team.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
   OneToMany,
-  JoinColumn,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity('users')
@@ -34,4 +33,10 @@ export class UserEntity {
 
   @OneToMany(() => ActivityEntity, (activity) => activity.activity_creator)
   created_events: Array<ActivityEntity>;
+
+  @ManyToMany(() => TeamsEntity, (team) => team.creator)
+  created_teams?: Array<TeamsEntity>;
+
+  @ManyToMany(() => TeamsEntity, (team) => team.members)
+  joined_teams?: Array<TeamsEntity>;
 }

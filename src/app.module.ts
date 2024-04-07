@@ -12,6 +12,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ImagesModule } from './images/images.module';
 import { ImageEntity } from './images/entities/image.entity';
+import { TeamsModule } from './teams/teams.module';
+import { TeamsEntity } from './teams/entities/team.entity';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { ImageEntity } from './images/entities/image.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [UserEntity, ActivityEntity, ImageEntity],
+      entities: [UserEntity, ActivityEntity, ImageEntity, TeamsEntity],
       synchronize: true,
     }),
     UsersModule,
@@ -33,6 +35,7 @@ import { ImageEntity } from './images/entities/image.entity';
       storage: memoryStorage(),
     }),
     ImagesModule,
+    TeamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

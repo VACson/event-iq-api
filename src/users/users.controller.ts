@@ -29,12 +29,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 @ApiTags('users')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/me')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   async getMe(@UserId() uuid: string) {
     if (!uuid) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
