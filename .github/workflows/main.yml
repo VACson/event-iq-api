@@ -1,0 +1,23 @@
+name: CICD
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: deploy only changed-files	
+
+
+    runs-on: linux
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run command on remote server
+        uses: D3rHase/ssh-command-action@v0.2.2
+        with:
+          host: ${{secrets.DEPLOY_HOST}}
+          user: ${{secrets.DEPLOY_USER}}
+          public_key: ${{secrets.DEPLOY_KEY}}
+          command: |
+            server.sh;
