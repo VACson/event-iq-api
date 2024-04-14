@@ -16,10 +16,11 @@ async function bootstrap() {
     .setDescription('The activities API description')
     .setVersion('1.0')
     .addBearerAuth()
+    .setBasePath('api')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },
