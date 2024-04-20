@@ -23,8 +23,11 @@ export class TeamsService {
     });
   }
 
-  findAll({ limit = 10, offset = 0 } = {}) {
-    return this.teamsRepository.find({
+  async findAll({ limit = 10, offset = 0 } = {}): Promise<{
+    results: TeamsEntity[];
+    count: number;
+  }> {
+    const results = await this.teamsRepository.find({
       relations: {
         creator: true,
         members: true,
@@ -47,6 +50,10 @@ export class TeamsService {
       take: limit,
       skip: offset,
     });
+
+    const count = await this.teamsRepository.count();
+
+    return { results, count };
   }
 
   findOne(uuid: string) {

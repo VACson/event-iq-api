@@ -28,8 +28,8 @@ export class TeamsController {
   }
 
   @Get()
-  findAll() {
-    return this.teamsService.findAll();
+  async findAll() {
+    return await this.teamsService.findAll();
   }
 
   @Get(':uuid')

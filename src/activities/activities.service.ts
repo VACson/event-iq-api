@@ -24,8 +24,11 @@ export class ActivitiesService {
     });
   }
 
-  async findAll({ limit = 10, offset = 0 } = {}): Promise<ActivityEntity[]> {
-    return this.activityRepository.find({
+  async findAll({ limit = 10, offset = 0 } = {}): Promise<{
+    results: ActivityEntity[];
+    count: number;
+  }> {
+    const results = await this.activityRepository.find({
       relations: {
         activity_creator: true,
         activity_images: true,
@@ -53,6 +56,10 @@ export class ActivitiesService {
       take: limit,
       skip: offset,
     });
+
+    const count = await this.activityRepository.count();
+
+    return { results, count };
   }
 
   async findUserCreatedEvents(userUuid: string): Promise<ActivityEntity[]> {

@@ -32,8 +32,7 @@ export class ActivitiesController {
 
   @Get()
   async findAll() {
-    const results = await this.activitiesService.findAll();
-    return { results };
+    return await this.activitiesService.findAll();
   }
 
   @Get('user-created')
