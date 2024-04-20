@@ -1,22 +1,22 @@
-name: CICD
+name: Deploy Dev
+
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]  # You can change this to trigger on specific branches
+
 jobs:
   deploy:
-    name: deploy dev
-
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Run command on remote server
-        uses: D3rHase/ssh-command-action@v0.2.2
+      - name: Run script on server
+        uses: appleboy/ssh-action@v2.3.1  # This action is used for SSH connection
         with:
-          host: ${{secrets.DEPLOY_HOST}}
-          user: ${{secrets.DEPLOY_USER}}
-          ssh-private-key: ${{secrets.DEPLOY_KEY}}
-          command: |
-            server.sh;
+          host: ${{ secrets.DEPLOY_HOST }}  # Replace with your server's hostname or IP address
+          username: ${{ secrets.DEPLOY_USER }}  # Replace with your server's username
+          key: ${{ secrets.DEPLOY_KEY }}  # Replace with your private SSH key content (stored as a secret)
+          script: |  # Script to be executed on the server
+            cd
+            bash server.sh
