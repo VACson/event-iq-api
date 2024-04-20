@@ -2,7 +2,7 @@ name: Deploy Dev
 
 on:
   push:
-    branches: [ master ]  # You can change this to trigger on specific branches
+    branches: [ master ]  
 
 jobs:
   deploy:
@@ -12,11 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Run script on server
-        uses: appleboy/ssh-action@v2.3.1  # This action is used for SSH connection
+        uses: appleboy/ssh-action@v1.0.3 
         with:
-          host: ${{ secrets.DEPLOY_HOST }}  # Replace with your server's hostname or IP address
-          username: ${{ secrets.DEPLOY_USER }}  # Replace with your server's username
-          key: ${{ secrets.DEPLOY_KEY }}  # Replace with your private SSH key content (stored as a secret)
-          script: |  # Script to be executed on the server
+          host: ${{ secrets.DEPLOY_HOST }} 
+          username: ${{ secrets.DEPLOY_USER }}  
+          key: ${{ secrets.DEPLOY_KEY }} 
+          script: | 
             cd
             bash server.sh
