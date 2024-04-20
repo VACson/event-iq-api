@@ -5,10 +5,9 @@ on:
       - master
 jobs:
   deploy:
-    name: deploy only changed-files	
+    name: deploy dev
 
-
-    runs-on: linux
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
