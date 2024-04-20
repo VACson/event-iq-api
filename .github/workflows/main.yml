@@ -17,6 +17,6 @@ jobs:
         with:
           host: ${{secrets.DEPLOY_HOST}}
           user: ${{secrets.DEPLOY_USER}}
-          public_key: ${{secrets.DEPLOY_KEY}}
+          ssh-private-key: ${{secrets.DEPLOY_KEY}}
           command: |
             server.sh;
