@@ -1,22 +1,22 @@
-name: CICD
+name: Deploy Dev
+
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]  
+
 jobs:
   deploy:
-    name: deploy dev
-
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Run command on remote server
-        uses: D3rHase/ssh-command-action@v0.2.2
+      - name: Run script on server
+        uses: appleboy/ssh-action@v1.0.3 
         with:
-          host: ${{secrets.DEPLOY_HOST}}
-          user: ${{secrets.DEPLOY_USER}}
-          public_key: ${{secrets.DEPLOY_KEY}}
-          command: |
-            server.sh;
+          host: ${{ secrets.DEPLOY_HOST }} 
+          username: ${{ secrets.DEPLOY_USER }}  
+          key: ${{ secrets.DEPLOY_KEY }} 
+          script: | 
+            cd
+            bash server.sh
