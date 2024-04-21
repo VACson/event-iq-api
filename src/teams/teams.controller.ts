@@ -42,6 +42,11 @@ export class TeamsController {
     return this.teamsService.update(uuid, updateTeamDto);
   }
 
+  @Patch(':uuid/join')
+  addNewMember(@Param('uuid') uuid: string, @UserId() userUuid: string) {
+    return this.teamsService.addNewMember(uuid, userUuid);
+  }
+
   @Delete(':uuid')
   remove(@Param('uuid') uuid: string) {
     return this.teamsService.remove(uuid);

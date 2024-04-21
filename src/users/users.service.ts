@@ -24,15 +24,30 @@ export class UsersService {
   async findById(uuid: string): Promise<UserEntity> {
     const response = await this.userRepository.findOne({
       where: { uuid },
+
+      relations: {
+        created_events: true,
+        created_teams: true,
+        joined_teams: true,
+      },
+
+      select: {
+        uuid: true,
+        email: true,
+        username: true,
+        description: true,
+        avatar: true,
+        created_events: true,
+        created_teams: true,
+        joined_teams: true,
+      },
     });
 
     if (!response) {
       throw new NotFoundException('User not found');
     }
 
-    const { password_hash, password_salt, ...user } = response;
-
-    return user;
+    return response;
   }
 
   async update(uuid: string, dto: UpdateUserDto): Promise<UserEntity> {

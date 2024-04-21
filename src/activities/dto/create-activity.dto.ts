@@ -5,11 +5,8 @@ export class CreateActivityDto {
   activity_name: string;
 
   @ApiProperty()
-  activity_creator_id?: string;
+  activity_participants?: number;
 
   @ApiProperty()
-  activity_participants: number;
-
-  @ApiProperty()
-  activity_notes: string;
+  activity_notes?: string;
 }
