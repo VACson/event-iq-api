@@ -34,6 +34,7 @@ export class TeamsService {
       },
       select: {
         uuid: true,
+        name: true,
         description: true,
         avatar: true,
         creator: {

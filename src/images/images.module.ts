@@ -5,6 +5,7 @@ import { ImageEntity } from './entities/image.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'src/users/users.module';
 import { ActivitiesModule } from 'src/activities/activities.module';
+import { TeamsModule } from 'src/teams/teams.module';
 
 @Module({
   controllers: [ImagesController],
@@ -13,6 +14,7 @@ import { ActivitiesModule } from 'src/activities/activities.module';
     TypeOrmModule.forFeature([ImageEntity]),
     UsersModule,
     ActivitiesModule,
+    TeamsModule,
   ],
   exports: [ImagesService],
 })
