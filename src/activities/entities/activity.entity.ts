@@ -5,7 +5,8 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
-  OneToMany,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity('activity')
@@ -28,9 +29,13 @@ export class ActivityEntity {
   @Column({ default: 0 })
   views: number;
 
+  @Column({ nullable: true })
+  image: string;
+
   @ManyToOne(() => UserEntity, (user) => user.created_events)
   creator: UserEntity;
 
-  @Column({ nullable: true })
-  image: string;
+  @JoinTable()
+  @ManyToMany(() => UserEntity, (user) => user.joined_events)
+  members: UserEntity[];
 }

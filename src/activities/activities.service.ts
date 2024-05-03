@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,6 +35,7 @@ export class ActivitiesService {
     const results = await this.activityRepository.find({
       relations: {
         creator: true,
+        members: true,
       },
       select: {
         uuid: true,
@@ -62,7 +67,27 @@ export class ActivitiesService {
   }
 
   findById(uuid: string): Promise<ActivityEntity> {
-    return this.activityRepository.findOneBy({ uuid });
+    return this.activityRepository.findOne({
+      where: { uuid },
+      relations: {
+        creator: true,
+        members: true,
+      },
+      select: {
+        uuid: true,
+        name: true,
+        description: true,
+        location: true,
+        views: true,
+        creator: {
+          uuid: true,
+          username: true,
+          description: true,
+          avatar: true,
+        },
+        image: true,
+      },
+    });
   }
 
   async update(uuid: string, dto: UpdateActivityDto): Promise<ActivityEntity> {
@@ -94,42 +119,42 @@ export class ActivitiesService {
     return this.activityRepository.save(activity);
   }
 
-  // async addNewMember(uuid: string, userUuid: string) {
-  //   const activity = await this.findById(uuid);
-  //   const user = await this.usersService.findById(userUuid);
+  async addNewMember(uuid: string, userUuid: string) {
+    const activity = await this.findById(uuid);
+    const user = await this.usersService.findById(userUuid);
 
-  //   if (!activity || !user) {
-  //     throw new NotFoundException('Team or user not found');
-  //   }
+    if (!activity || !user) {
+      throw new NotFoundException('Team or user not found');
+    }
 
-  //   const isCreator = activity.creator.uuid === userUuid;
+    const isCreator = activity?.creator?.uuid === userUuid;
 
-  //   if (isCreator) {
-  //     throw new ConflictException('User is creator of the team');
-  //   }
+    if (isCreator) {
+      throw new ConflictException('User is creator of the activity');
+    }
 
-  //   const isMember = activity.participants.some(
-  //     (member) => member.username === user.username,
-  //   );
+    const isMember = activity.members?.some(
+      (member) => member.username === user.username,
+    );
 
-  //   if (isMember) {
-  //     throw new ConflictException('User is already a member of the team');
-  //   }
+    if (isMember) {
+      throw new ConflictException('User is already a member of the activity');
+    }
 
-  //   team.members.push(user);
+    activity.members.push(user);
 
-  //   await this.teamsRepository.save({
-  //     uuid,
-  //     name: team.name,
-  //     description: team.description,
-  //     avatar: team.avatar,
-  //     members: team.members,
-  //   });
+    await this.activityRepository.save({
+      uuid,
+      name: activity.name,
+      description: activity.description,
+      image: activity.image,
+      members: activity.members,
+    });
 
-  //   return this.findOne(uuid);
-  // }
+    return this.findById(uuid);
+  }
 
   remove(uuid: string) {
-    return `This action removes a #${uuid} activity`;
+    return this.activityRepository.delete({ uuid });
   }
 }

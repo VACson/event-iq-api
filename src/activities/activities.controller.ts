@@ -55,6 +55,12 @@ export class ActivitiesController {
     return this.activitiesService.update(uuid, updateActivityDto);
   }
 
+  @Patch(':uuid/join')
+  @UseGuards(JwtAuthGuard)
+  addNewMember(@UserId() userUuid: string, @Param('uuid') uuid: string) {
+    return this.activitiesService.addNewMember(uuid, userUuid);
+  }
+
   @Delete(':uuid')
   @UseGuards(JwtAuthGuard)
   remove(@Param('uuid') uuid: string) {

@@ -35,9 +35,14 @@ export class UserEntity {
   @OneToMany(() => ActivityEntity, (activity) => activity.creator)
   created_events: Array<ActivityEntity>;
 
-  @OneToMany(() => TeamsEntity, (team) => team.creator)
-  created_teams?: Array<TeamsEntity>;
+  @JoinTable()
+  @ManyToMany(() => TeamsEntity, (activity) => activity.members)
+  joined_events?: Array<ActivityEntity>;
 
+  @OneToMany(() => TeamsEntity, (team) => team.creator)
+  created_teams: Array<TeamsEntity>;
+
+  @JoinTable()
   @ManyToMany(() => TeamsEntity, (team) => team.members)
-  joined_teams?: Array<TeamsEntity>;
+  joined_teams: Array<TeamsEntity>;
 }
