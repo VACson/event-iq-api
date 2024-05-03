@@ -32,7 +32,4 @@ export class ImageEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.avatar)
   user: UserEntity;
-
-  @ManyToOne(() => ActivityEntity, (activity) => activity.activity_images)
-  event: ActivityEntity;
 }

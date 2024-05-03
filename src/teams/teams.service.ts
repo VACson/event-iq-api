@@ -74,6 +74,7 @@ export class TeamsService {
         description: true,
         avatar: true,
         creator: {
+          uuid: true,
           username: true,
           description: true,
           avatar: true,
@@ -101,7 +102,7 @@ export class TeamsService {
       throw new NotFoundException('Team or user not found');
     }
 
-    const isCreator = team.creator.username === user.username;
+    const isCreator = team.creator.uuid === userUuid;
 
     if (isCreator) {
       throw new ConflictException('User is creator of the team');

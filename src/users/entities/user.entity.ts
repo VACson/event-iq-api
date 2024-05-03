@@ -32,7 +32,7 @@ export class UserEntity {
   @Column()
   password_salt?: string;
 
-  @OneToMany(() => ActivityEntity, (activity) => activity.activity_creator)
+  @OneToMany(() => ActivityEntity, (activity) => activity.creator)
   created_events: Array<ActivityEntity>;
 
   @OneToMany(() => TeamsEntity, (team) => team.creator)

@@ -20,7 +20,7 @@ export class ActivitiesService {
 
     return this.activityRepository.save({
       ...createActivityDto,
-      activity_creator: user,
+      creator: user,
     });
   }
 
@@ -30,28 +30,21 @@ export class ActivitiesService {
   }> {
     const results = await this.activityRepository.find({
       relations: {
-        activity_creator: true,
-        activity_images: true,
+        creator: true,
       },
       select: {
-        activity_uuid: true,
-        activity_name: true,
-        activity_duration: true,
-        activity_category: true,
-        activity_participants: true,
-        activity_notes: true,
-        activity_placement: true,
-        activity_views: true,
-        activity_creator: {
+        uuid: true,
+        name: true,
+        description: true,
+        location: true,
+        views: true,
+        creator: {
+          uuid: true,
           username: true,
           description: true,
           avatar: true,
         },
-        activity_images: {
-          filename: true,
-          mimetype: true,
-          originalName: true,
-        },
+        image: true,
       },
       take: limit,
       skip: offset,
@@ -65,18 +58,15 @@ export class ActivitiesService {
   async findUserCreatedEvents(userUuid: string): Promise<ActivityEntity[]> {
     const user = await this.usersService.findById(userUuid);
 
-    return this.activityRepository.find({ where: { activity_creator: user } });
+    return this.activityRepository.find({ where: { creator: user } });
   }
 
-  findById(activity_uuid: string): Promise<ActivityEntity> {
-    return this.activityRepository.findOneBy({ activity_uuid });
+  findById(uuid: string): Promise<ActivityEntity> {
+    return this.activityRepository.findOneBy({ uuid });
   }
 
-  async update(
-    activity_uuid: string,
-    dto: UpdateActivityDto,
-  ): Promise<ActivityEntity> {
-    const activity = await this.activityRepository.findOneBy({ activity_uuid });
+  async update(uuid: string, dto: UpdateActivityDto): Promise<ActivityEntity> {
+    const activity = await this.activityRepository.findOneBy({ uuid });
 
     if (!activity) {
       throw new NotFoundException('Event not found');
@@ -88,23 +78,58 @@ export class ActivitiesService {
   }
 
   async addActivityImage(
-    activity_uuid: string,
+    uuid: string,
     image: ImageEntity,
   ): Promise<ActivityEntity> {
     const activity = await this.activityRepository.findOne({
-      where: { activity_uuid },
-      relations: ['activity_images'],
+      where: { uuid },
+      relations: ['images'],
     });
 
     if (!activity) {
       throw new NotFoundException('User not found');
     }
 
-    activity.activity_images.push(image);
+    activity.image = image.filename;
     return this.activityRepository.save(activity);
   }
 
-  remove(activity_uuid: string) {
-    return `This action removes a #${activity_uuid} activity`;
+  // async addNewMember(uuid: string, userUuid: string) {
+  //   const activity = await this.findById(uuid);
+  //   const user = await this.usersService.findById(userUuid);
+
+  //   if (!activity || !user) {
+  //     throw new NotFoundException('Team or user not found');
+  //   }
+
+  //   const isCreator = activity.creator.uuid === userUuid;
+
+  //   if (isCreator) {
+  //     throw new ConflictException('User is creator of the team');
+  //   }
+
+  //   const isMember = activity.participants.some(
+  //     (member) => member.username === user.username,
+  //   );
+
+  //   if (isMember) {
+  //     throw new ConflictException('User is already a member of the team');
+  //   }
+
+  //   team.members.push(user);
+
+  //   await this.teamsRepository.save({
+  //     uuid,
+  //     name: team.name,
+  //     description: team.description,
+  //     avatar: team.avatar,
+  //     members: team.members,
+  //   });
+
+  //   return this.findOne(uuid);
+  // }
+
+  remove(uuid: string) {
+    return `This action removes a #${uuid} activity`;
   }
 }

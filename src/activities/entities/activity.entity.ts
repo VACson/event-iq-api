@@ -11,32 +11,26 @@ import {
 @Entity('activity')
 export class ActivityEntity {
   @PrimaryGeneratedColumn('uuid')
-  activity_uuid: string;
+  uuid: string;
 
-  @Column()
-  activity_name: string;
+  @Column({ default: 'Activity' })
+  name: string;
+
+  @Column({ nullable: true })
+  location: string;
+
+  @Column({ nullable: true })
+  date: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ default: 0 })
+  views: number;
 
   @ManyToOne(() => UserEntity, (user) => user.created_events)
-  activity_creator: UserEntity;
+  creator: UserEntity;
 
   @Column({ nullable: true })
-  activity_duration: number;
-
-  @Column({ nullable: true })
-  activity_category: string;
-
-  @Column({ default: 0 })
-  activity_participants: number;
-
-  @Column({ default: '' })
-  activity_notes: string;
-
-  @Column({ nullable: true })
-  activity_placement: string;
-
-  @Column({ default: 0 })
-  activity_views: number;
-
-  @OneToMany(() => ImageEntity, (image) => image.event)
-  activity_images: Array<ImageEntity>;
+  image: string;
 }

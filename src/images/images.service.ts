@@ -72,29 +72,4 @@ export class ImagesService {
 
     return result;
   }
-
-  async uploadEventImage(file: Express.Multer.File, activityUuid: string) {
-    const event = await this.activitiesService.findById(activityUuid);
-
-    if (!event) {
-      throw new NotFoundException('Event not found');
-    }
-
-    const image = this.imagesRepository.create({
-      filename: file.filename,
-      originalName: file.originalname,
-      size: file.size,
-      mimetype: file.mimetype,
-      event: event,
-    });
-
-    await this.imagesRepository.save(image);
-
-    const result = await this.activitiesService.addActivityImage(
-      activityUuid,
-      image,
-    );
-
-    return result;
-  }
 }
