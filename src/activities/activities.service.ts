@@ -49,6 +49,12 @@ export class ActivitiesService {
           description: true,
           avatar: true,
         },
+        members: {
+          uuid: true,
+          username: true,
+          description: true,
+          avatar: true,
+        },
         image: true,
       },
       take: limit,
@@ -80,6 +86,12 @@ export class ActivitiesService {
         location: true,
         views: true,
         creator: {
+          uuid: true,
+          username: true,
+          description: true,
+          avatar: true,
+        },
+        members: {
           uuid: true,
           username: true,
           description: true,

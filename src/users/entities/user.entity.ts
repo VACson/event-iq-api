@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToMany,
-  JoinTable,
 } from 'typeorm';
 
 @Entity('users')
@@ -35,14 +34,12 @@ export class UserEntity {
   @OneToMany(() => ActivityEntity, (activity) => activity.creator)
   created_events: Array<ActivityEntity>;
 
-  @JoinTable()
-  @ManyToMany(() => TeamsEntity, (activity) => activity.members)
+  @ManyToMany(() => ActivityEntity, (activity) => activity.members)
   joined_events?: Array<ActivityEntity>;
 
   @OneToMany(() => TeamsEntity, (team) => team.creator)
   created_teams: Array<TeamsEntity>;
 
-  @JoinTable()
   @ManyToMany(() => TeamsEntity, (team) => team.members)
   joined_teams: Array<TeamsEntity>;
 }

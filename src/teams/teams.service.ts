@@ -48,6 +48,7 @@ export class TeamsService {
           avatar: true,
         },
         members: {
+          uuid: true,
           username: true,
           description: true,
           avatar: true,
@@ -80,6 +81,7 @@ export class TeamsService {
           avatar: true,
         },
         members: {
+          uuid: true,
           username: true,
           description: true,
           avatar: true,

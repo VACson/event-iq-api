@@ -27,6 +27,7 @@ export class UsersService {
 
       relations: {
         created_events: true,
+        joined_events: true,
         created_teams: true,
         joined_teams: true,
       },
@@ -38,6 +39,7 @@ export class UsersService {
         description: true,
         avatar: true,
         created_events: true,
+        joined_events: true,
         created_teams: true,
         joined_teams: true,
       },
