@@ -31,8 +31,9 @@ export class ActivitiesController {
   }
 
   @Get()
-  async findAll() {
-    return await this.activitiesService.findAll();
+  @UseGuards(JwtAuthGuard)
+  async findAll(@UserId() userUuid: string) {
+    return await this.activitiesService.findAll({ userUuid });
   }
 
   @Get('user-created')
@@ -42,8 +43,9 @@ export class ActivitiesController {
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid') uuid: string) {
-    return this.activitiesService.findById(uuid);
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('uuid') uuid: string, @UserId() userUuid: string) {
+    return this.activitiesService.findById({ uuid, userUuid });
   }
 
   @Patch(':uuid')

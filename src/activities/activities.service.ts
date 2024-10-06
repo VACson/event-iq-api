@@ -28,9 +28,10 @@ export class ActivitiesService {
     });
   }
 
-  async findAll({ limit = 10, offset = 0 } = {}): Promise<{
-    results: ActivityEntity[];
+  async findAll({ limit = 10, offset = 0, userUuid = '' } = {}): Promise<{
+    results: any;
     count: number;
+    userUuid?: string;
   }> {
     const results = await this.activityRepository.find({
       relations: {
@@ -46,13 +47,6 @@ export class ActivitiesService {
         creator: {
           uuid: true,
           username: true,
-          description: true,
-          avatar: true,
-        },
-        members: {
-          uuid: true,
-          username: true,
-          description: true,
           avatar: true,
         },
         image: true,
@@ -61,9 +55,26 @@ export class ActivitiesService {
       skip: offset,
     });
 
+    const enhancedResults = results.map((activity) => {
+      const memberCount = activity.members.length;
+
+      const isJoined =
+        activity.members.some((member) => member.uuid === userUuid) ||
+        activity.creator.uuid === userUuid;
+
+      const { members, ...activityWithoutMembers } = activity;
+
+      return {
+        ...activityWithoutMembers,
+        member_count: memberCount,
+        is_joined: isJoined,
+        userUuid,
+      };
+    });
+
     const count = await this.activityRepository.count();
 
-    return { results, count };
+    return { results: enhancedResults, count };
   }
 
   async findUserCreatedEvents(userUuid: string): Promise<ActivityEntity[]> {
@@ -72,8 +83,14 @@ export class ActivitiesService {
     return this.activityRepository.find({ where: { creator: user } });
   }
 
-  findById(uuid: string): Promise<ActivityEntity> {
-    return this.activityRepository.findOne({
+  async findById({
+    uuid,
+    userUuid = '',
+  }: {
+    uuid: string;
+    userUuid?: string;
+  }): Promise<any> {
+    const activity = await this.activityRepository.findOne({
       where: { uuid },
       relations: {
         creator: true,
@@ -100,6 +117,18 @@ export class ActivitiesService {
         image: true,
       },
     });
+
+    const memberCount = activity.members.length;
+
+    const isJoined =
+      activity.members.some((member) => member.uuid === userUuid) ||
+      activity.creator.uuid === userUuid;
+
+    return {
+      ...activity,
+      member_count: memberCount,
+      is_joined: isJoined,
+    };
   }
 
   async update(uuid: string, dto: UpdateActivityDto): Promise<ActivityEntity> {
@@ -132,7 +161,7 @@ export class ActivitiesService {
   }
 
   async addNewMember(uuid: string, userUuid: string) {
-    const activity = await this.findById(uuid);
+    const activity = await this.activityRepository.findOneBy({ uuid });
     const user = await this.usersService.findById(userUuid);
 
     if (!activity || !user) {
@@ -163,7 +192,7 @@ export class ActivitiesService {
       members: activity.members,
     });
 
-    return this.findById(uuid);
+    return this.findById({ uuid, userUuid });
   }
 
   remove(uuid: string) {
