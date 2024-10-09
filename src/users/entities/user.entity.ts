@@ -25,10 +25,10 @@ export class UserEntity {
   @Column({ nullable: true })
   avatar?: string;
 
-  @Column()
+  @Column({ select: false })
   password_hash?: string;
 
-  @Column()
+  @Column({ select: false })
   password_salt?: string;
 
   @OneToMany(() => ActivityEntity, (activity) => activity.creator)

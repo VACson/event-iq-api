@@ -55,4 +55,9 @@ export class UsersController {
   ) {
     return this.usersService.update(uuid, updateUserDto);
   }
+
+  @Get()
+  async findAll() {
+    return await this.usersService.findAll();
+  }
 }

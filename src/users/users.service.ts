@@ -76,4 +76,8 @@ export class UsersService {
 
     return this.findById(uuid);
   }
+
+  async findAll(): Promise<UserEntity[]> {
+    return this.userRepository.find();
+  }
 }
